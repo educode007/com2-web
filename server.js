@@ -34,8 +34,19 @@ app.post('/api/wits-data', (req, res) => {
     console.log('POST /api/wits-data - body:', req.body);
     
     const apiKey = req.headers['x-api-key'] || req.headers['X-API-Key'];
-    if (!apiKey || apiKey !== process.env.API_KEY) {
-        console.log('API key inválida:', apiKey);
+    console.log('API key recibida:', apiKey);
+    console.log('API key esperada:', process.env.API_KEY);
+    console.log('¿Son iguales?', apiKey === process.env.API_KEY);
+    
+    if (!apiKey) {
+        console.log('No se recibió API key');
+        return res.status(401).json({ error: 'API key no proporcionada' });
+    }
+    
+    if (apiKey !== process.env.API_KEY) {
+        console.log('API key no coincide');
+        console.log('Longitud recibida:', apiKey.length);
+        console.log('Longitud esperada:', process.env.API_KEY.length);
         return res.status(401).json({ error: 'API key inválida' });
     }
 
