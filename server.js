@@ -10,11 +10,15 @@ app.use(express.json());
 // Variable global para almacenar los últimos datos
 let lastData = null;
 
-// Servir archivos estáticos desde la carpeta public
-app.use(express.static('public'));
+// Middleware para logging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
 
 // Ruta para obtener los últimos datos
 app.get('/api/wits-data', (req, res) => {
+    console.log('GET /api/wits-data - lastData:', lastData);
     if (lastData) {
         res.json(lastData);
     } else {
@@ -24,17 +28,30 @@ app.get('/api/wits-data', (req, res) => {
 
 // Ruta para recibir datos (protegida con API key)
 app.post('/api/wits-data', (req, res) => {
+    console.log('POST /api/wits-data - headers:', req.headers);
+    console.log('POST /api/wits-data - body:', req.body);
+    
     const apiKey = req.headers['x-api-key'];
     if (!apiKey || apiKey !== process.env.API_KEY) {
+        console.log('API key inválida:', apiKey);
         return res.status(401).json({ error: 'API key inválida' });
     }
 
     lastData = req.body;
-    console.log('Datos recibidos:', lastData);
+    console.log('Datos actualizados:', lastData);
     res.json({ status: 'ok' });
+});
+
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static('public'));
+
+// Ruta catch-all para SPA
+app.get('*', (req, res) => {
+    res.sendFile('index.html', { root: './public' });
 });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en puerto ${PORT}`);
+    console.log(`API_KEY configurada: ${process.env.API_KEY ? 'Sí' : 'No'}`);
 });
