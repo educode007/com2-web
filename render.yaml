@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: com2-web
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: API_KEY
+        value: pwits_com2_k3y_2025_v1
+      - key: PORT
+        value: 3001
