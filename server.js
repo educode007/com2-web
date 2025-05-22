@@ -19,9 +19,11 @@ app.use((req, res, next) => {
 // Ruta para obtener los últimos datos
 app.get('/api/wits-data', (req, res) => {
     console.log('GET /api/wits-data - lastData:', lastData);
-    if (lastData) {
+    if (lastData && lastData.code === '0113') {
+        console.log('Enviando datos al cliente:', lastData);
         res.json(lastData);
     } else {
+        console.log('No hay datos disponibles o no son del código 0113');
         res.status(404).json({ error: 'No hay datos disponibles' });
     }
 });
@@ -31,15 +33,22 @@ app.post('/api/wits-data', (req, res) => {
     console.log('POST /api/wits-data - headers:', req.headers);
     console.log('POST /api/wits-data - body:', req.body);
     
-    const apiKey = req.headers['x-api-key'];
+    const apiKey = req.headers['x-api-key'] || req.headers['X-API-Key'];
     if (!apiKey || apiKey !== process.env.API_KEY) {
         console.log('API key inválida:', apiKey);
         return res.status(401).json({ error: 'API key inválida' });
     }
 
-    lastData = req.body;
-    console.log('Datos actualizados:', lastData);
-    res.json({ status: 'ok' });
+    // Validar que los datos sean del formato correcto
+    const data = req.body;
+    if (!data || !data.code || !data.value || data.code !== '0113') {
+        console.log('Datos inválidos:', data);
+        return res.status(400).json({ error: 'Datos inválidos' });
+    }
+
+    lastData = data;
+    console.log('Datos actualizados correctamente:', lastData);
+    res.json({ status: 'ok', data: lastData });
 });
 
 // Servir archivos estáticos desde la carpeta public
