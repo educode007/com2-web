@@ -8,7 +8,12 @@ app.use(cors());
 app.use(express.json());
 
 // Variable global para almacenar los últimos datos
-let lastData = null;
+let lastDataMap = {
+    '0717': null,
+    '0713': null,
+    '0715': null,
+    '0213': null
+};
 
 // Middleware para logging
 app.use((req, res, next) => {
@@ -18,14 +23,8 @@ app.use((req, res, next) => {
 
 // Ruta para obtener los últimos datos
 app.get('/api/wits-data', (req, res) => {
-    console.log('GET /api/wits-data - lastData:', lastData);
-    if (lastData && lastData.code === '0717') {
-        console.log('Enviando datos al cliente:', lastData);
-        res.json(lastData);
-    } else {
-        console.log('No hay datos disponibles o no son del código 0717');
-        res.status(404).json({ error: 'No hay datos disponibles' });
-    }
+    console.log('GET /api/wits-data - lastDataMap:', lastDataMap);
+    res.json(lastDataMap);
 });
 
 // Ruta para recibir datos (protegida con API key)
@@ -52,14 +51,18 @@ app.post('/api/wits-data', (req, res) => {
 
     // Validar que los datos sean del formato correcto
     const data = req.body;
-    if (!data || !data.code || !data.value || data.code !== '0717') {
+    if (!data || !data.code || !data.value) {
         console.log('Datos inválidos:', data);
         return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    lastData = data;
-    console.log('Datos actualizados correctamente:', lastData);
-    res.json({ status: 'ok', data: lastData });
+    // Actualizar el mapa de datos si el código es uno de los que nos interesa
+    if (['0717', '0713', '0715', '0213'].includes(data.code)) {
+        lastDataMap[data.code] = data;
+        console.log('Datos actualizados correctamente para código:', data.code);
+    }
+
+    res.json({ status: 'ok', data: lastDataMap });
 });
 
 // Servir archivos estáticos desde la carpeta public
