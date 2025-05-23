@@ -19,11 +19,11 @@ app.use((req, res, next) => {
 // Ruta para obtener los últimos datos
 app.get('/api/wits-data', (req, res) => {
     console.log('GET /api/wits-data - lastData:', lastData);
-    if (lastData && lastData.code === '0113') {
+    if (lastData && lastData.code === '0717') {
         console.log('Enviando datos al cliente:', lastData);
         res.json(lastData);
     } else {
-        console.log('No hay datos disponibles o no son del código 0113');
+        console.log('No hay datos disponibles o no son del código 0717');
         res.status(404).json({ error: 'No hay datos disponibles' });
     }
 });
@@ -52,7 +52,7 @@ app.post('/api/wits-data', (req, res) => {
 
     // Validar que los datos sean del formato correcto
     const data = req.body;
-    if (!data || !data.code || !data.value || data.code !== '0113') {
+    if (!data || !data.code || !data.value || data.code !== '0717') {
         console.log('Datos inválidos:', data);
         return res.status(400).json({ error: 'Datos inválidos' });
     }
