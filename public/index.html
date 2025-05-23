@@ -145,13 +145,20 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const data = await response.json();
-                updateUI(data);
+                const dataMap = await response.json();
+                console.log('Datos recibidos:', dataMap);
+                updateUI(dataMap);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                const statusElement = document.getElementById('status');
-                statusElement.textContent = `Error de conexión: ${error.message}`;
-                statusElement.className = 'status disconnected';
+                const codes = ['0717', '0713', '0715', '0213'];
+                codes.forEach(code => {
+                    const statusElement = document.getElementById(`status-${code}`);
+                    if (statusElement) {
+                        statusElement.textContent = 'Error de conexión';
+                        statusElement.classList.remove('connected');
+                        statusElement.classList.add('disconnected');
+                    }
+                });
             }
         }
 
