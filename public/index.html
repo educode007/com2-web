@@ -68,22 +68,22 @@
             <div>Última actualización: <span id="timestamp-0717">--</span></div>
         </div>
         <div class="data-container">
-            <h2>INC (0713)</h2>
-            <div class="value" id="value-0713">--</div>
-            <div class="status" id="status-0713">Desconectado</div>
-            <div>Última actualización: <span id="timestamp-0713">--</span></div>
+            <h2>INC (0117)</h2>
+            <div class="value" id="value-0117">--</div>
+            <div class="status" id="status-0117">Desconectado</div>
+            <div>Última actualización: <span id="timestamp-0117">--</span></div>
         </div>
         <div class="data-container">
-            <h2>Azimuth (0715)</h2>
-            <div class="value" id="value-0715">--</div>
-            <div class="status" id="status-0715">Desconectado</div>
-            <div>Última actualización: <span id="timestamp-0715">--</span></div>
+            <h2>Azimuth (0108)</h2>
+            <div class="value" id="value-0108">--</div>
+            <div class="status" id="status-0108">Desconectado</div>
+            <div>Última actualización: <span id="timestamp-0108">--</span></div>
         </div>
         <div class="data-container">
-            <h2>SPP (0213)</h2>
-            <div class="value" id="value-0213">--</div>
-            <div class="status" id="status-0213">Desconectado</div>
-            <div>Última actualización: <span id="timestamp-0213">--</span></div>
+            <h2>SPP (0121)</h2>
+            <div class="value" id="value-0121">--</div>
+            <div class="status" id="status-0121">Desconectado</div>
+            <div>Última actualización: <span id="timestamp-0121">--</span></div>
         </div>
     </div>
 
@@ -150,7 +150,7 @@
                 updateUI(dataMap);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                const codes = ['0717', '0713', '0715', '0213'];
+                const codes = ['0717', '0117', '0108', '0121'];
                 codes.forEach(code => {
                     const statusElement = document.getElementById(`status-${code}`);
                     if (statusElement) {
