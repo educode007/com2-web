@@ -7,11 +7,16 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
             background-color: #f0f2f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
         }
 
         .main-container {
@@ -25,16 +30,16 @@
         .grid-container {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            width: 250px;
+            gap: 8px;
+            width: 150px;
         }
 
         .data-container {
-            padding: 10px;
+            padding: 6px;
             border: 1px solid #dee2e6;
-            border-radius: 8px;
+            border-radius: 6px;
             background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             transition: transform 0.2s;
         }
 
@@ -44,13 +49,13 @@
 
         h2 {
             margin: 0;
-            font-size: 1em;
+            font-size: 0.8em;
             color: #495057;
         }
 
         .value {
-            font-size: 1.5em;
-            margin: 8px 0;
+            font-size: 1.1em;
+            margin: 4px 0;
             color: #333;
             font-weight: bold;
         }
@@ -72,30 +77,65 @@
             color: #721c24;
         }
 
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
         .circles-container {
             position: relative;
-            width: 400px;
-            height: 400px;
+            width: 450px;
+            height: 450px;
             margin: 0 auto;
         }
 
         .circle {
             position: absolute;
-            border: 2px solid #007bff;
+            border: 1px solid #000;
             border-radius: 50%;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            opacity: 0.2;
         }
 
-        .circle:nth-child(1) { width: 50px; height: 50px; }
-        .circle:nth-child(2) { width: 100px; height: 100px; }
-        .circle:nth-child(3) { width: 150px; height: 150px; }
-        .circle:nth-child(4) { width: 200px; height: 200px; }
-        .circle:nth-child(5) { width: 250px; height: 250px; }
-        .circle:nth-child(6) { width: 300px; height: 300px; }
-        .circle:nth-child(7) { width: 350px; height: 350px; }
+        .circle:nth-child(1) { width: 40px; height: 40px; }
+        .circle:nth-child(2) { width: 80px; height: 80px; }
+        .circle:nth-child(3) { width: 120px; height: 120px; }
+        .circle:nth-child(4) { width: 160px; height: 160px; }
+        .circle:nth-child(5) { width: 200px; height: 200px; }
+        .circle:nth-child(6) { width: 240px; height: 240px; }
+        .circle:nth-child(7) { width: 280px; height: 280px; }
+        .circle:nth-child(8) { width: 320px; height: 320px; }
+        .circle:nth-child(9) { width: 360px; height: 360px; }
+        .circle:nth-child(10) { width: 400px; height: 400px; }
+        .circle:nth-child(11) { width: 440px; height: 440px; }
+
+        .quadrant-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .quadrant-line {
+            position: absolute;
+            width: 1px;
+            height: 50%;
+            background-color: #000;
+            top: 0;
+            left: 50%;
+            transform-origin: bottom center;
+        }
+
+        .quadrant-line:nth-child(1) { transform: translateX(-50%) rotate(0deg); }
+        .quadrant-line:nth-child(2) { transform: translateX(-50%) rotate(90deg); }
+        .quadrant-line:nth-child(3) { transform: translateX(-50%) rotate(180deg); }
+        .quadrant-line:nth-child(4) { transform: translateX(-50%) rotate(270deg); }
     </style>
 </head>
 <body>
@@ -106,17 +146,27 @@
                 <h2>gTFA</h2>
                 <div class="value" id="value-0717">--</div>
                 <div class="status" id="status-0717">Desconectado</div>
-                <div>Última actualización: <span id="timestamp-0717">--</span></div>
+                <div> <span id="timestamp-0717">--</span></div>
             </div>
             <div class="data-container">
                 <h2>INC (0117)</h2>
                 <div class="value" id="value-0117">--</div>
                 <div class="status" id="status-0117">Desconectado</div>
-                <div>Última actualización: <span id="timestamp-0117">--</span></div>
+                <div> <span id="timestamp-0117">--</span></div>
             </div>
         </div>
 
         <div class="circles-container">
+            <div class="quadrant-lines">
+                <div class="quadrant-line"></div>
+                <div class="quadrant-line"></div>
+                <div class="quadrant-line"></div>
+                <div class="quadrant-line"></div>
+            </div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle"></div>
@@ -131,13 +181,13 @@
                 <h2>Azimuth (0108)</h2>
                 <div class="value" id="value-0108">--</div>
                 <div class="status" id="status-0108">Desconectado</div>
-                <div>Última actualización: <span id="timestamp-0108">--</span></div>
+                <div> <span id="timestamp-0108">--</span></div>
             </div>
             <div class="data-container">
                 <h2>SPP (0121)</h2>
                 <div class="value" id="value-0121">--</div>
                 <div class="status" id="status-0121">Desconectado</div>
-                <div>Última actualización: <span id="timestamp-0121">--</span></div>
+                <div> <span id="timestamp-0121">--</span></div>
             </div>
         </div>
     </div>
@@ -148,7 +198,7 @@
         let lastUpdateTime = null;
 
         function updateUI(dataMap) {
-            const codes = ['0717', '0117', '0108', '0121'];
+            const codes = ['0823', '0117', '0108', '0121'];
             
             codes.forEach(code => {
                 const data = dataMap[code];
@@ -174,7 +224,7 @@
         }
 
         function checkConnectionStatus() {
-            const codes = ['0717', '0117', '0108', '0121'];
+            const codes = ['0823', '0117', '0108', '0121'];
             codes.forEach(code => {
                 const statusElement = document.getElementById(`status-${code}`);
                 if (lastUpdateTime && (new Date() - lastUpdateTime) > 5000) {
