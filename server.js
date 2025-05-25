@@ -9,7 +9,7 @@ app.use(express.json());
 
 // Variable global para almacenar los últimos datos
 let lastDataMap = {
-    '0717': null,
+    '0823': null,
     '0117': null,
     '0108': null,
     '0121': null
@@ -57,7 +57,7 @@ app.post('/api/wits-data', (req, res) => {
     }
 
     // Actualizar el mapa de datos si el código es uno de los que nos interesa
-    if (['0717', '0117', '0108', '0121'].includes(data.code)) {
+    if (['0823', '0117', '0108', '0121'].includes(data.code)) {
         lastDataMap[data.code] = data;
         console.log('Datos actualizados correctamente para código:', data.code);
     }
