@@ -238,6 +238,7 @@
     <script>
         // La URL base se obtendrá del servidor actual
         const API_URL = window.location.origin + '/api/wits-data';
+        let lastUpdateTime = null;
         
         // Función para actualizar la posición del punto azul
         function updateBluePoint(angleDeg) {
@@ -259,10 +260,10 @@
                 var x = centerX + radius * Math.cos(angleRad);
                 var y = centerY + radius * Math.sin(angleRad);
                 
-                // Actualizar posición sin transform
-                point.style.transform = 'none';
+                // Actualizar posición
                 point.style.left = Math.round(x) + 'px';
                 point.style.top = Math.round(y) + 'px';
+                point.style.transform = 'translate(-50%, -50%)';
             }
         }
 
@@ -275,8 +276,19 @@
             codes.forEach(code => {
                 const data = dataMap[code];
                 const valueElement = document.getElementById(`value-${code}`);
+                const statusElement = document.getElementById(`status-${code}`);
+                
                 if (valueElement) {
                     valueElement.textContent = data ? data.value : '--';
+                }
+                if (statusElement) {
+                    statusElement.textContent = data ? 'Conectado' : 'Desconectado';
+                }
+                
+                // Si es el código 0823, actualizar el punto azul
+                if (code === '0823' && data && !isNaN(Number(data.value))) {
+                    console.log('Actualizando punto azul a:', data.value, 'grados');
+                    updateBluePoint(Number(data.value));
                 }
             });
         }
