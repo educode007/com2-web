@@ -216,7 +216,7 @@
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle circle-outer" style="width:440px;height:440px;"></div>
-            <div id="point-0823" style="position:absolute; width:8px; height:8px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
+            <div id="point-0823" style="position:absolute; width:10px; height:10px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
         </div>
 
         <div class="grid-container">
@@ -243,16 +243,26 @@
         function updateBluePoint(angleDeg) {
             var point = document.getElementById('point-0823');
             if(point) {
-                // Círculo exterior: radio 220px, siguiente: 200px => punto a 210px desde el centro
-                var radius = 210; // px desde el centro
-                var centerX = 225; // mitad de 450px
+                // Radio del punto: entre círculo de 440px y 400px
+                var outerRadius = 440/2; // 220px
+                var innerRadius = 400/2; // 200px
+                var radius = (outerRadius + innerRadius)/2; // Punto en medio de ambos círculos
+                
+                // El centro está en 450/2 = 225px tanto para X como Y
+                var centerX = 225;
                 var centerY = 225;
-                var angleRad = (angleDeg - 90) * Math.PI / 180; // -90 para que 0° sea arriba
+                
+                // Convertir ángulo a radianes (-90 para que 0° sea arriba)
+                var angleRad = (angleDeg - 90) * Math.PI / 180;
+                
+                // Calcular nueva posición
                 var x = centerX + radius * Math.cos(angleRad);
                 var y = centerY + radius * Math.sin(angleRad);
-                point.style.left = x + 'px';
-                point.style.top = y + 'px';
-                point.style.transform = 'none'; // Eliminar el transform inicial
+                
+                // Actualizar posición sin transform
+                point.style.transform = 'none';
+                point.style.left = Math.round(x) + 'px';
+                point.style.top = Math.round(y) + 'px';
             }
         }
 
