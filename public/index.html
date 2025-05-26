@@ -216,7 +216,7 @@
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle circle-outer" style="width:440px;height:440px;"></div>
-            <div id="point-0823" style="position:absolute; width:16px; height:16px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%);"></div>
+            <div id="point-0823" style="position:absolute; width:8px; height:8px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
         </div>
 
         <div class="grid-container">
@@ -238,45 +238,35 @@
     <script>
         // La URL base se obtendrá del servidor actual
         const API_URL = window.location.origin + '/api/wits-data';
+        
         // Función para actualizar la posición del punto azul
         function updateBluePoint(angleDeg) {
-            // Círculo exterior: radio 220px, siguiente: 200px => punto a 210px desde el centro
-            var radius = 210; // px desde el centro
-            var centerX = 225; // mitad de 450px
-            var centerY = 225;
-            var angleRad = (angleDeg - 90) * Math.PI / 180; // -90 para que 0° sea arriba
-            var x = centerX + radius * Math.cos(angleRad);
-            var y = centerY + radius * Math.sin(angleRad);
-            var point = document.getElementById('blue-point');
+            var point = document.getElementById('point-0823');
             if(point) {
+                // Círculo exterior: radio 220px, siguiente: 200px => punto a 210px desde el centro
+                var radius = 210; // px desde el centro
+                var centerX = 225; // mitad de 450px
+                var centerY = 225;
+                var angleRad = (angleDeg - 90) * Math.PI / 180; // -90 para que 0° sea arriba
+                var x = centerX + radius * Math.cos(angleRad);
+                var y = centerY + radius * Math.sin(angleRad);
                 point.style.left = x + 'px';
                 point.style.top = y + 'px';
+                point.style.transform = 'none'; // Eliminar el transform inicial
             }
         }
 
         // Código existente para actualizar la UI
         function updateUI(dataMap) {
+            if (!dataMap) return;
+            
             const codes = ['0823', '0117', '0108', '0121'];
             
             codes.forEach(code => {
                 const data = dataMap[code];
                 const valueElement = document.getElementById(`value-${code}`);
-                const timestampElement = document.getElementById(`timestamp-${code}`);
-                const statusElement = document.getElementById(`status-${code}`);
-                
-                if (data) {
-                    valueElement.textContent = data.value;
-                    timestampElement.textContent = new Date(data.timestamp).toLocaleString();
-                    
-                    if (data.status === 'Conectado') {
-                        statusElement.textContent = 'Conectado';
-                        statusElement.classList.remove('disconnected');
-                        statusElement.classList.add('connected');
-                    } else {
-                        statusElement.textContent = 'Desconectado';
-                        statusElement.classList.remove('connected');
-                        statusElement.classList.add('disconnected');
-                    }
+                if (valueElement) {
+                    valueElement.textContent = data ? data.value : '--';
                 }
             });
         }
