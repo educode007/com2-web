@@ -216,7 +216,15 @@
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle circle-outer" style="width:440px;height:440px;"></div>
-            <div id="point-0823" style="position:absolute; width:10px; height:10px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
+            <!-- Puntos históricos (del más nuevo al más viejo) -->
+            <div id="point-0823-0" class="history-point current" style="position:absolute; width:12px; height:12px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
+            <div id="point-0823-1" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.85; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:999;"></div>
+            <div id="point-0823-2" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.7; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:998;"></div>
+            <div id="point-0823-3" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.6; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:997;"></div>
+            <div id="point-0823-4" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.5; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:996;"></div>
+            <div id="point-0823-5" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.4; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:995;"></div>
+            <div id="point-0823-6" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.3; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:994;"></div>
+            <div id="point-0823-7" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.2; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:993;"></div>
         </div>
 
         <div class="grid-container">
@@ -240,32 +248,34 @@
         const API_URL = window.location.origin + '/api/wits-data';
         let lastUpdateTime = null;
         
-        // Función para actualizar la posición del punto azul
-        function updateBluePoint(angleDeg) {
-            var point = document.getElementById('point-0823');
-            if(point) {
-                // Radio del punto: entre círculo de 440px y 400px
-                var outerRadius = 440/2; // 220px
-                var innerRadius = 400/2; // 200px
-                var radius = (outerRadius + innerRadius)/2; // Punto en medio de ambos círculos
-                
-                // El centro está en 450/2 = 225px tanto para X como Y
-                var centerX = 225;
-                var centerY = 225;
-                
-                // Convertir ángulo a radianes (-90 para que 0° sea arriba)
-                var angleRad = (angleDeg - 90) * Math.PI / 180;
-                
-                // Calcular nueva posición
-                var x = centerX + radius * Math.cos(angleRad);
-                var y = centerY + radius * Math.sin(angleRad);
-                
-                // Actualizar posición
-                point.style.left = Math.round(x) + 'px';
-                point.style.top = Math.round(y) + 'px';
-                point.style.transform = 'translate(-50%, -50%)';
-            }
+        // Función para calcular el radio para un espacio específico
+        function getRadiusForSpace(spaceIndex) {
+            // Los círculos van de 440px a 80px de diámetro
+            const diameters = [440, 400, 360, 320, 280, 240, 200, 160, 120, 80];
+            const outerDiameter = diameters[spaceIndex];
+            const innerDiameter = diameters[spaceIndex + 1];
+            return (outerDiameter + innerDiameter) / 4; // Dividimos por 4 para obtener el radio medio
         }
+
+        // Función para actualizar la posición de un punto
+        function updatePoint(pointIndex, angleDeg) {
+            const point = document.getElementById(`point-0823-${pointIndex}`);
+            if (!point) return;
+
+            const radius = getRadiusForSpace(pointIndex);
+            const centerX = 225; // mitad de 450px
+            const centerY = 225;
+            const angleRad = (angleDeg - 90) * Math.PI / 180;
+
+            const x = centerX + radius * Math.cos(angleRad);
+            const y = centerY + radius * Math.sin(angleRad);
+
+            point.style.left = Math.round(x) + 'px';
+            point.style.top = Math.round(y) + 'px';
+        }
+
+        // Array para mantener el historial de ángulos
+        let angleHistory = new Array(8).fill(0);
 
         // Código existente para actualizar la UI
         function updateUI(dataMap) {
@@ -285,10 +295,19 @@
                     statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                 }
                 
-                // Si es el código 0823, actualizar el punto azul
+                // Si es el código 0823, actualizar los puntos
                 if (code === '0823' && data && !isNaN(Number(data.value))) {
-                    console.log('Actualizando punto azul a:', data.value, 'grados');
-                    updateBluePoint(Number(data.value));
+                    const newAngle = Number(data.value);
+                    console.log('Actualizando puntos. Nuevo ángulo:', newAngle);
+                    
+                    // Mover valores antiguos una posición hacia adentro
+                    angleHistory.unshift(newAngle);
+                    angleHistory = angleHistory.slice(0, 8);
+                    
+                    // Actualizar todos los puntos
+                    angleHistory.forEach((angle, index) => {
+                        updatePoint(index, angle);
+                    });
                 }
             });
         }
