@@ -6,6 +6,9 @@
     <title>COM2 Data Reader</title>
     <style>
         body {
+    margin-top: 0;
+    padding-top: 0;
+
             font-family: Arial, sans-serif;
             max-width: 100%;
             margin: 0 auto;
@@ -83,7 +86,7 @@
             align-items: center;
             width: 100%;
             max-width: 900px;
-            margin: 0 auto;
+            margin: 0 auto 0 auto;
         }
 
         .circles-container {
@@ -95,12 +98,16 @@
 
         .circle {
             position: absolute;
-            border: 1px solid #000;
+            border: 1.5px solid #000;
             border-radius: 50%;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
+        .circle-outer {
+            border-width: 4px !important;
+        }
+        
 
         
         .circle:nth-child(2) { width: 80px; height: 80px; }
@@ -154,12 +161,13 @@
             font-size: 12px;
             color: #000;
             font-weight: bold;
+            pointer-events: none;
         }
-
-        .degree-0 { top: 5px; left: 50%; transform: translateX(-50%); }
-        .degree-90 { right: 5px; top: 50%; transform: translateY(-50%); }
-        .degree-180 { bottom: 5px; left: 50%; transform: translateX(-50%); }
-        .degree-270 { left: 5px; top: 50%; transform: translateY(-50%); }
+        /* Suponiendo que el círculo exterior es de 440px, lo dejamos a 10px fuera del borde */
+        .degree-0    { top: -18px; left: 50%; transform: translateX(-50%); }
+        .degree-90   { right: -18px; top: 50%; transform: translateY(-50%); }
+        .degree-180  { bottom: -18px; left: 50%; transform: translateX(-50%); }
+        .degree-270  { left: -18px; top: 50%; transform: translateY(-50%); }
     </style>
 </head>
 <body>
@@ -170,13 +178,13 @@
                 <h2>gTFA</h2>
                 <div class="value" id="value-0823">--</div>
                 <div class="status" id="status-0823">Desconectado</div>
-                <div> <span id="timestamp-0823">--</span></div>
+
             </div>
             <div class="data-container">
                 <h2>INC (0117)</h2>
                 <div class="value" id="value-0117">--</div>
                 <div class="status" id="status-0117">Desconectado</div>
-                <div> <span id="timestamp-0117">--</span></div>
+
             </div>
         </div>
 
@@ -207,7 +215,8 @@
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle"></div>
-            <div class="circle"></div>
+            <div class="circle circle-outer" style="width:440px;height:440px;"></div>
+            <div id="point-0823" style="position:absolute; width:16px; height:16px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%);"></div>
         </div>
 
         <div class="grid-container">
@@ -215,13 +224,13 @@
                 <h2>Azimuth (0108)</h2>
                 <div class="value" id="value-0108">--</div>
                 <div class="status" id="status-0108">Desconectado</div>
-                <div> <span id="timestamp-0108">--</span></div>
+
             </div>
             <div class="data-container">
                 <h2>SPP (0121)</h2>
                 <div class="value" id="value-0121">--</div>
                 <div class="status" id="status-0121">Desconectado</div>
-                <div> <span id="timestamp-0121">--</span></div>
+
             </div>
         </div>
     </div>
@@ -229,8 +238,23 @@
     <script>
         // La URL base se obtendrá del servidor actual
         const API_URL = window.location.origin + '/api/wits-data';
-        let lastUpdateTime = null;
+        // Función para actualizar la posición del punto azul
+        function updateBluePoint(angleDeg) {
+            // Círculo exterior: radio 220px, siguiente: 200px => punto a 210px desde el centro
+            var radius = 210; // px desde el centro
+            var centerX = 225; // mitad de 450px
+            var centerY = 225;
+            var angleRad = (angleDeg - 90) * Math.PI / 180; // -90 para que 0° sea arriba
+            var x = centerX + radius * Math.cos(angleRad);
+            var y = centerY + radius * Math.sin(angleRad);
+            var point = document.getElementById('blue-point');
+            if(point) {
+                point.style.left = x + 'px';
+                point.style.top = y + 'px';
+            }
+        }
 
+        // Código existente para actualizar la UI
         function updateUI(dataMap) {
             const codes = ['0823', '0117', '0108', '0121'];
             
