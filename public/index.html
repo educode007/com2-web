@@ -216,15 +216,19 @@
             <div class="circle"></div>
             <div class="circle"></div>
             <div class="circle circle-outer" style="width:440px;height:440px;"></div>
+            <!-- SVG para las líneas entre puntos -->
+            <svg id="lines-container" style="position:absolute; width:100%; height:100%; left:0; top:0; z-index:990;">
+                <path id="points-path" stroke="#0074D9" stroke-width="2" fill="none" opacity="0.5"/>
+            </svg>
             <!-- Puntos históricos (del más nuevo al más viejo) -->
-            <div id="point-0823-0" class="history-point current" style="position:absolute; width:12px; height:12px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
-            <div id="point-0823-1" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.85; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:999;"></div>
-            <div id="point-0823-2" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.7; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:998;"></div>
-            <div id="point-0823-3" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.6; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:997;"></div>
+            <div id="point-0823-0" class="history-point current" style="position:absolute; width:16px; height:16px; background:#0074D9; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
+            <div id="point-0823-1" class="history-point" style="position:absolute; width:15px; height:15px; background:#0074D9; opacity:0.85; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:999;"></div>
+            <div id="point-0823-2" class="history-point" style="position:absolute; width:14px; height:14px; background:#0074D9; opacity:0.7; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:998;"></div>
+            <div id="point-0823-3" class="history-point" style="position:absolute; width:13px; height:13px; background:#0074D9; opacity:0.6; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:997;"></div>
             <div id="point-0823-4" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.5; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:996;"></div>
-            <div id="point-0823-5" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.4; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:995;"></div>
-            <div id="point-0823-6" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.3; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:994;"></div>
-            <div id="point-0823-7" class="history-point" style="position:absolute; width:12px; height:12px; background:#0074D9; opacity:0.2; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:993;"></div>
+            <div id="point-0823-5" class="history-point" style="position:absolute; width:11px; height:11px; background:#0074D9; opacity:0.4; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:995;"></div>
+            <div id="point-0823-6" class="history-point" style="position:absolute; width:10px; height:10px; background:#0074D9; opacity:0.3; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:994;"></div>
+            <div id="point-0823-7" class="history-point" style="position:absolute; width:9px; height:9px; background:#0074D9; opacity:0.2; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:993;"></div>
         </div>
 
         <div class="grid-container">
@@ -260,7 +264,7 @@
         // Función para actualizar la posición de un punto
         function updatePoint(pointIndex, angleDeg) {
             const point = document.getElementById(`point-0823-${pointIndex}`);
-            if (!point) return;
+            if (!point) return null;
 
             const radius = getRadiusForSpace(pointIndex);
             const centerX = 225; // mitad de 450px
@@ -272,10 +276,31 @@
 
             point.style.left = Math.round(x) + 'px';
             point.style.top = Math.round(y) + 'px';
+
+            // Retornar la posición para dibujar la línea
+            return { x: Math.round(x), y: Math.round(y) };
         }
 
-        // Array para mantener el historial de ángulos
-        let angleHistory = new Array(8).fill(0);
+        // Array para mantener el historial de ángulos y posiciones
+        let angleHistory = new Array(8).fill(null);
+        let pointPositions = new Array(8).fill(null);
+        let lastAngle = null;
+
+        // Función para actualizar la línea entre puntos
+        function updateLines() {
+            const path = document.getElementById('points-path');
+            if (!path) return;
+
+            // Filtrar posiciones null y crear el path
+            const validPositions = pointPositions.filter(pos => pos !== null);
+            if (validPositions.length < 2) return;
+
+            const pathData = validPositions.reduce((acc, pos, idx) => {
+                return acc + (idx === 0 ? 'M' : 'L') + pos.x + ',' + pos.y;
+            }, '');
+
+            path.setAttribute('d', pathData);
+        }
 
         // Código existente para actualizar la UI
         function updateUI(dataMap) {
@@ -296,18 +321,29 @@
                 }
                 
                 // Si es el código 0823, actualizar los puntos
-                if (code === '0823' && data && !isNaN(Number(data.value))) {
-                    const newAngle = Number(data.value);
-                    console.log('Actualizando puntos. Nuevo ángulo:', newAngle);
+                if (code === '0823') {
+                    const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
                     
-                    // Mover valores antiguos una posición hacia adentro
-                    angleHistory.unshift(newAngle);
-                    angleHistory = angleHistory.slice(0, 8);
-                    
-                    // Actualizar todos los puntos
-                    angleHistory.forEach((angle, index) => {
-                        updatePoint(index, angle);
-                    });
+                    // Solo actualizar si hay un nuevo valor válido y es diferente al anterior
+                    if (newAngle !== null && newAngle !== lastAngle) {
+                        console.log('Nuevo dato 0823:', newAngle, '°');
+                        lastAngle = newAngle;
+                        
+                        // Mover valores antiguos una posición hacia adentro
+                        angleHistory.unshift(newAngle);
+                        angleHistory = angleHistory.slice(0, 8);
+                        
+                        // Actualizar puntos y guardar posiciones
+                        angleHistory.forEach((angle, index) => {
+                            if (angle !== null) {
+                                const pos = updatePoint(index, angle);
+                                pointPositions[index] = pos;
+                            }
+                        });
+                        
+                        // Actualizar las líneas entre puntos
+                        updateLines();
+                    }
                 }
             });
         }
