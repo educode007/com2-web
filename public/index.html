@@ -209,8 +209,8 @@
             </div>
             <div class="data-container">
                 <h2>AZI</h2>
-                <div class="value" id="value-0117">--</div>
-                <div class="status" id="status-0117">Desconectado</div>
+                <div class="value" id="value-0715">--</div>
+                <div class="status" id="status-0715">Desconectado</div>
             </div>
             <div class="data-container">
                 <h2>MagW</h2>
@@ -394,7 +394,7 @@
         }
 
         function checkConnectionStatus() {
-            const codes = ['0823', '0117', '0108', '0121'];
+            const codes = ['0713', '0715', '0717', '0716', '0733', '0736', '0737'];
             codes.forEach(code => {
                 const statusElement = document.getElementById(`status-${code}`);
                 if (lastUpdateTime && (new Date() - lastUpdateTime) > 5000) {
