@@ -16,7 +16,9 @@ let lastDataMap = {
     '0716': null,
     '0733': null,
     '0736': null,
-    '0737': null
+    '0737': null,
+    '0732': null,
+    '0731': null
 };
 
 // Middleware para logging
@@ -61,7 +63,7 @@ app.post('/api/wits-data', (req, res) => {
     }
 
     // Actualizar el mapa de datos si el código es uno de los que nos interesa
-    if (['0713', '0715', '0717', '0716', '0733', '0736', '0737'].includes(data.code)) {
+    if (['0713', '0715', '0717', '0716', '0733', '0736', '0737', '0732', '0731'].includes(data.code)) {
         lastDataMap[data.code] = data;
         console.log('Datos actualizados correctamente para código:', data.code);
     }
