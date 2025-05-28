@@ -366,30 +366,30 @@
                 }
                 
                 // Si es el código 0171, actualizar los puntos
-                if (code === '0717') {
-                    const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
-                    
-                    // Solo actualizar si hay un nuevo valor válido y es diferente al anterior
-                    if (newAngle !== null && newAngle !== lastAngle) {
-                        console.log('Nuevo dato 0717:', newAngle, '°');
-                        lastAngle = newAngle;
-                        
-                        // Mover valores antiguos una posición hacia adentro
-                        angleHistory.unshift(newAngle);
-                        angleHistory = angleHistory.slice(0, 8);
-                        
-                        // Actualizar puntos y guardar posiciones
-                        angleHistory.forEach((angle, index) => {
-                            if (angle !== null) {
-                                const pos = updatePoint(index, angle);
-                                pointPositions[index] = pos;
-                            }
-                        });
-                        
-                        // Actualizar las líneas entre puntos
-                        updateLines();
-                    }
-                }
+if (code === '0717') {
+    const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
+    
+    // Solo actualizar si hay un nuevo valor válido
+    if (newAngle !== null) {
+        console.log('Nuevo dato 0:', newAngle, '°');
+        lastAngle = newAngle;
+        
+        // Mover valores antiguos una posición hacia adentro
+        angleHistory.unshift(newAngle);
+        angleHistory = angleHistory.slice(0, 8);
+        
+        // Actualizar puntos y guardar posiciones
+        angleHistory.forEach((angle, index) => {
+            if (angle !== null) {
+                const pos = updatePoint(index, angle);
+                pointPositions[index] = pos;
+            }
+        });
+        
+        // Actualizar las líneas entre puntos
+        updateLines();
+    }
+}
             });
         }
 
