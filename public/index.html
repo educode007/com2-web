@@ -369,8 +369,8 @@
 if (code === '0717') {
     const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
     
-    // Solo actualizar si hay un nuevo valor válido
-    if (newAngle !== null) {
+    // Solo actualizar si hay un nuevo valor válido y es diferente al último
+    if (newAngle !== null && newAngle !== lastAngle) {
         console.log('Nuevo dato 0:', newAngle, '°');
         lastAngle = newAngle;
         
