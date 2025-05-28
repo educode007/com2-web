@@ -9,8 +9,7 @@ app.use(express.json());
 
 // Variable global para almacenar los últimos datos
 let lastDataMap = {
-    '0823': null,
-    '0117': null,
+
     '0713': null,
     '0715': null,
     '0717': null,
