@@ -351,7 +351,7 @@
         function updateUI(dataMap) {
             if (!dataMap) return;
             
-            const codes = ['0713', '0715', '0732', '0731','0717', '0716', '0733', '0736', '0737'];
+            const codes = ['0713', '0715', '0732', '0731','0717', '0716', '0736', '0737'];
             
             codes.forEach(code => {
                 const data = dataMap[code];
@@ -365,13 +365,13 @@
                     statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                 }
                 
-                // Si es el código 0823, actualizar los puntos
+                // Si es el código 0171, actualizar los puntos
                 if (code === '0717') {
                     const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
                     
                     // Solo actualizar si hay un nuevo valor válido y es diferente al anterior
                     if (newAngle !== null && newAngle !== lastAngle) {
-                        console.log('Nuevo dato 0823:', newAngle, '°');
+                        console.log('Nuevo dato 0717:', newAngle, '°');
                         lastAngle = newAngle;
                         
                         // Mover valores antiguos una posición hacia adentro
@@ -394,7 +394,7 @@
         }
 
         function checkConnectionStatus() {
-            const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0733', '0736', '0737'];
+            const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
             codes.forEach(code => {
                 const statusElement = document.getElementById(`status-${code}`);
                 if (lastUpdateTime && (new Date() - lastUpdateTime) > 5000) {
@@ -425,7 +425,7 @@
                 updateUI(dataMap);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                const codes = ['0713', '0715', '0717', '0716', '0733', '0736', '0737'];
+                const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
                 codes.forEach(code => {
                     const statusElement = document.getElementById(`status-${code}`);
                     if (statusElement) {
