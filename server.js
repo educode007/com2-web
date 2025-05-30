@@ -63,8 +63,18 @@ app.post('/api/wits-data', (req, res) => {
 
     // Actualizar el mapa de datos si el código es uno de los que nos interesa
     if (['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'].includes(data.code)) {
-        lastDataMap[data.code] = data;
-        console.log('Datos actualizados correctamente para código:', data.code);
+        // Para 0717, siempre actualizamos con un nuevo timestamp
+        if (data.code === '0717') {
+            lastDataMap['0717'] = {
+                ...data,
+                timestamp: Date.now() // Añadimos timestamp para tracking
+            };
+            console.log('Dato 0717 recibido:', data.value);
+        } else {
+            // Para otros códigos, actualizamos normalmente
+            lastDataMap[data.code] = data;
+            console.log('Datos actualizados para código:', data.code);
+        }
     }
 
     res.json({ status: 'ok', data: lastDataMap });
