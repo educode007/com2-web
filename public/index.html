@@ -365,13 +365,13 @@
                     statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                 }
                 
-                // Solo procesamos cuando es el dato '0717'
-                if (code === '0717' && data && data.value !== undefined) {
+                // Solo procesamos cuando es el dato '0717' y viene del peripheral server
+                if (code === '0717' && data && data.value !== undefined && data.fromPeripheral) {
                     const newValue = Number(data.value);
                     
-                    // Actualizamos siempre que llegue un dato numérico válido
+                    // Actualizamos si es un dato numérico válido
                     if (!isNaN(newValue)) {
-                        console.log('Nuevo dato 0717:', newValue);
+                        console.log('Nuevo dato 0717 del peripheral server:', newValue);
 
                         // Desplazamos todos los valores una posición
                         angleHistory.unshift(newValue);
@@ -387,6 +387,9 @@
 
                         // Actualizamos las líneas entre puntos
                         updateLines();
+                        
+                        // Eliminamos la marca fromPeripheral para que no se procese de nuevo
+                        data.fromPeripheral = false;
                     }
                 }
             });
