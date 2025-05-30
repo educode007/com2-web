@@ -7,9 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Variable global para almacenar los últimos datos
+// Variables globales para almacenar los datos
 let lastDataMap = {
-
     '0713': null,
     '0715': null,
     '0732': null,
@@ -20,6 +19,9 @@ let lastDataMap = {
     '0737': null
 };
 
+// Variable para controlar cuándo fue la última actualización real de 0717
+let last0717Update = null;
+
 // Middleware para logging
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
@@ -28,8 +30,15 @@ app.use((req, res, next) => {
 
 // Ruta para obtener los últimos datos
 app.get('/api/wits-data', (req, res) => {
-    console.log('GET /api/wits-data - lastDataMap:', lastDataMap);
-    res.json(lastDataMap);
+    // Creamos una copia del mapa de datos
+    const responseData = { ...lastDataMap };
+    
+    // Solo incluimos 0717 si ha habido una actualización real
+    if (!last0717Update) {
+        responseData['0717'] = null;
+    }
+    
+    res.json(responseData);
 });
 
 // Ruta para recibir datos (protegida con API key)
@@ -63,20 +72,15 @@ app.post('/api/wits-data', (req, res) => {
 
     // Actualizar el mapa de datos si el código es uno de los que nos interesa
     if (['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'].includes(data.code)) {
-        // Para 0717, solo actualizamos si el valor es diferente al anterior
         if (data.code === '0717') {
-            const currentValue = lastDataMap['0717'] ? lastDataMap['0717'].value : null;
-            if (currentValue !== data.value) {
-                lastDataMap['0717'] = {
-                    ...data,
-                    timestamp: Date.now() // Añadimos timestamp para tracking
-                };
-                console.log('Nuevo valor 0717:', data.value, '(anterior:', currentValue, ')');
-            }
+            // Siempre actualizamos cuando recibimos un nuevo POST de 0717
+            // ya que esto significa que el peripheral sender envió un nuevo dato
+            lastDataMap['0717'] = data;
+            last0717Update = Date.now();
+            console.log('Nuevo dato 0717 recibido del peripheral sender:', data.value);
         } else {
             // Para otros códigos, actualizamos normalmente
             lastDataMap[data.code] = data;
-            console.log('Datos actualizados para código:', data.code);
         }
     }
 
