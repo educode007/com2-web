@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COM2 Data Reader</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            min-width: 0;
+            min-height: 100vh;
+            text-align: left;
+            background-color: #181a1b;
+            color: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            width: auto;
+        }
+        .grid-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 150px;
+            margin: 0 -17px;
+        }
+
+        .data-container {
+            width: 120px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4px;
+            border: 2px solid #ff9800;
+            border-radius: 7px;
+            background-color: #23272a;
+            box-shadow: none;
+            transition: transform 0.2s, border 0.2s;
+        }
+
+        .data-container:hover {
+            border: 2px solid #ff9800;
+            background-color: #23272a;
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 0.9em;
+            color: #ff9800;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        h3 {
+            margin: 40px 0 30px 0;
+            font-size: 2em;
+            color: #ffffff;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            font-weight: 700;
+            letter-spacing: 4px;
+        }
+        .value {
+            font-size: 1.1em;
+            margin: 4px 0;
+            color: #f5f5f5;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .status {
+            margin-top: 8px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            background: #23272a;
+            color: #ff9800;
+            border: 1px solid #23272a;
+        }
+
+        .connected {
+            background-color: #23272a;
+            color: #ff9800;
+            border: 1px solid #ff9800;
+        }
+        .disconnected {
+            background-color: #23272a;
+            color: #ff9800;
+            border: 1px solid #23272a;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .circles-container {
+            filter: drop-shadow(0 0 0 #0000);
+        
+            position: relative;
+            width: 450px;
+            height: 450px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .circle {
+            position: absolute;
+            border: 1.5px solid #ff9800;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: none;
+        }
+        .circle-outer {
+            border-width: 3px !important;
+            border-color: #ff9800 !important;
+        }
+        
+
+        
+        .circle:nth-child(2) { width: 64px; height: 64px; }
+        .circle:nth-child(3) { width: 96px; height: 96px; }
+        .circle:nth-child(4) { width: 128px; height: 128px; }
+        .circle:nth-child(5) { width: 160px; height: 160px; }
+        .circle:nth-child(6) { width: 192px; height: 192px; }
+        .circle:nth-child(7) { width: 224px; height: 224px; }
+        .circle:nth-child(8) { width: 256px; height: 256px; }
+        .circle:nth-child(9) { width: 288px; height: 288px; }
+        .circle:nth-child(10) { width: 320px; height: 320px; }
+        .circle:nth-child(11) { width: 352px; height: 352px; }
+
+        .quadrant-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .quadrant-line {
+            position: absolute;
+            width: 2px;
+            height: 40%;
+            background-color: #ff9800;
+            top: 10%;
+            left: 50%;
+            transform-origin: bottom center;
+            opacity: 0.8;
+        }
+
+        .quadrant-line:nth-child(1) { transform: translateX(-50%) rotate(0deg); }
+        .quadrant-line:nth-child(2) { transform: translateX(-50%) rotate(45deg); }
+        .quadrant-line:nth-child(3) { transform: translateX(-50%) rotate(90deg); }
+        .quadrant-line:nth-child(4) { transform: translateX(-50%) rotate(135deg); }
+        .quadrant-line:nth-child(5) { transform: translateX(-50%) rotate(180deg); }
+        .quadrant-line:nth-child(6) { transform: translateX(-50%) rotate(225deg); }
+        .quadrant-line:nth-child(7) { transform: translateX(-50%) rotate(270deg); }
+        .quadrant-line:nth-child(8) { transform: translateX(-50%) rotate(315deg); }
+
+        .degree-labels {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .degree-label {
+            position: absolute;
+            font-size: 13px;
+            color: #ff9800;
+            font-weight: 600;
+            pointer-events: none;
+            background: #181a1b;
+            padding: 1px 6px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+        /* Suponiendo que el círculo exterior es de 440px, lo dejamos a 10px fuera del borde */
+        .degree-0    { top: 25px; left: 50%; transform: translateX(-50%); }
+        .degree-90   { right: 25px; top: 50%; transform: translateY(-50%); }
+        .degree-180  { bottom: 25px; left: 50%; transform: translateX(-50%); }
+        .degree-270  { left: 25px; top: 50%; transform: translateY(-50%); }
+    </style>
+</head>
+<body>
+    <h3>MvTool Real Time</h3>
+    <div class="main-container">
+        <div class="grid-container">
+            <div class="data-container">
+                <h2>INC</h2>
+                <div class="value" id="value-0713">--</div>
+                <div class="status" id="status-0713">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>AZI</h2>
+                <div class="value" id="value-0715">--</div>
+                <div class="status" id="status-0715">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>MagW</h2>
+                <div class="value" id="value-0732">--</div>
+                <div class="status" id="status-0732">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>GrvW</h2>
+                <div class="value" id="value-0731">--</div>
+                <div class="status" id="status-0731">Desconectado</div>
+            </div>
+        </div>
+
+        <div class="rose-group" style="position: relative; width: 450px; height: 450px; margin: 0 1px; background: none;">
+            <div class="circles-container">
+                <div class="quadrant-lines">
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                </div>
+                <div class="degree-labels">
+                    <div class="degree-label degree-0">0°</div>
+                    <div class="degree-label degree-90">90°</div>
+                    <div class="degree-label degree-180">180°</div>
+                    <div class="degree-label degree-270">270°</div>
+                </div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle circle-outer" style="width:352px;height:352px;"></div>
+                <!-- SVG para las líneas entre puntos -->
+                <svg id="lines-container" style="position:absolute; width:100%; height:100%; left:0; top:0; z-index:990;">
+                    <path id="points-path" stroke="#0074D9" stroke-width="2" fill="none" opacity="0.5"/>
+                </svg>
+                <!-- Puntos históricos (del más nuevo al más viejo) -->
+                <div id="point-0823-0" class="history-point current" style="position:absolute; width:16px; height:16px; background:#ffffff; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
+                <div id="point-0823-1" class="history-point" style="position:absolute; width:15px; height:15px; background:#ffffff; opacity:0.85; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:999;"></div>
+                <div id="point-0823-2" class="history-point" style="position:absolute; width:14px; height:14px; background:#ffffff; opacity:0.7; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:998;"></div>
+                <div id="point-0823-3" class="history-point" style="position:absolute; width:13px; height:13px; background:#ffffff; opacity:0.6; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:997;"></div>
+                <div id="point-0823-4" class="history-point" style="position:absolute; width:12px; height:12px; background:#ffffff; opacity:0.5; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:996;"></div>
+                <div id="point-0823-5" class="history-point" style="position:absolute; width:11px; height:11px; background:#ffffff; opacity:0.4; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:995;"></div>
+                <div id="point-0823-6" class="history-point" style="position:absolute; width:10px; height:10px; background:#ffffff; opacity:0.3; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:994;"></div>
+                <div id="point-0823-7" class="history-point" style="position:absolute; width:9px; height:9px; background:#ffffff; opacity:0.2; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:993;"></div>
+            </div>
+        </div>
+        <div class="grid-container">
+            <div class="data-container">
+                <h2>gTFA</h2>
+                <div class="value" id="value-0717">--</div>
+                <div class="status" id="status-0717">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>mTFA</h2>
+                <div class="value" id="value-0716">--</div>
+                <div class="status" id="status-0716">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>Shock</h2>
+                <div class="value" id="value-0736">--</div>
+                <div class="status" id="status-0736">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>Vib</h2>
+                <div class="value" id="value-0737">--</div>
+                <div class="status" id="status-0737">Desconectado</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // La URL base se obtendrá del servidor actual
+        const API_URL = window.location.origin + '/api/wits-data';
+        let lastUpdateTime = null;
+        
+        // Función para calcular el radio para un espacio específico
+        function getRadiusForSpace(spaceIndex) {
+            // Los círculos van de 440px a 80px de diámetro
+            const diameters = [352, 320, 288, 256, 224, 192, 160, 128, 96, 64];
+            const outerDiameter = diameters[spaceIndex];
+            const innerDiameter = diameters[spaceIndex + 1];
+            return (outerDiameter + innerDiameter) / 4; // Dividimos por 4 para obtener el radio medio
+        }
+
+        // Función para actualizar la posición de un punto
+        function updatePoint(pointIndex, angleDeg) {
+            const point = document.getElementById(`point-0823-${pointIndex}`);
+            if (!point) return null;
+
+            const radius = getRadiusForSpace(pointIndex);
+            const centerX = 225; // mitad de 450px
+            const centerY = 225;
+            const angleRad = (angleDeg - 90) * Math.PI / 180;
+
+            const x = centerX + radius * Math.cos(angleRad);
+            const y = centerY + radius * Math.sin(angleRad);
+
+            point.style.left = Math.round(x) + 'px';
+            point.style.top = Math.round(y) + 'px';
+
+            // Retornar la posición para dibujar la línea
+            return { x: Math.round(x), y: Math.round(y) };
+        }
+
+        // Array para mantener el historial de ángulos y posiciones
+        // Array para mantener el historial de ángulos
+        let angleHistory = new Array(8).fill(null);
+        let pointPositions = new Array(8).fill(null);
+
+        // Función para actualizar la línea entre puntos
+        function updateLines() {
+            const path = document.getElementById('points-path');
+            if (!path) return;
+
+            // Filtrar posiciones null y crear el path
+            const validPositions = pointPositions.filter(pos => pos !== null);
+            if (validPositions.length < 2) return;
+
+            const pathData = validPositions.reduce((acc, pos, idx) => {
+                return acc + (idx === 0 ? 'M' : 'L') + pos.x + ',' + pos.y;
+            }, '');
+
+            path.setAttribute('d', pathData);
+        }
+
+        // Código existente para actualizar la UI
+        function updateUI(dataMap) {
+            if (!dataMap) return;
+            
+            const codes = ['0713', '0715', '0732', '0731','0717', '0716', '0736', '0737'];
+            
+            codes.forEach(code => {
+                const data = dataMap[code];
+                const valueElement = document.getElementById(`value-${code}`);
+                const statusElement = document.getElementById(`status-${code}`);
+                
+                if (valueElement) {
+                    valueElement.textContent = data ? data.value : '--';
+                }
+                if (statusElement) {
+                    statusElement.textContent = data ? 'Conectado' : 'Desconectado';
+                }
+                
+                // Solo procesamos cuando es el dato '0717'
+                if (code === '0717' && data && data.value !== undefined) {
+                    const newValue = Number(data.value);
+                    
+                    // Actualizamos siempre que llegue un dato numérico válido
+                    if (!isNaN(newValue)) {
+                        console.log('Nuevo dato 0717:', newValue);
+
+                        // Desplazamos todos los valores una posición
+                        angleHistory.unshift(newValue);
+                        angleHistory = angleHistory.slice(0, 8);
+
+                        // Actualizamos cada punto con su ángulo correspondiente
+                        angleHistory.forEach((angle, index) => {
+                            if (angle !== null) {
+                                const pos = updatePoint(index, angle);
+                                pointPositions[index] = pos;
+                            }
+                        });
+
+                        // Actualizamos las líneas entre puntos
+                        updateLines();
+                    }
+                }
+            });
+        }
+
+        function checkConnectionStatus() {
+            const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
+            codes.forEach(code => {
+                const statusElement = document.getElementById(`status-${code}`);
+                if (lastUpdateTime && (new Date() - lastUpdateTime) > 5000) {
+                    statusElement.textContent = 'Desconectado';
+                    statusElement.classList.remove('connected');
+                    statusElement.classList.add('disconnected');
+                }
+            });
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const dataMap = await response.json();
+                console.log('Datos recibidos:', dataMap);
+                updateUI(dataMap);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
+                codes.forEach(code => {
+                    const statusElement = document.getElementById(`status-${code}`);
+                    if (statusElement) {
+                        statusElement.textContent = 'Error de conexión';
+                        statusElement.classList.remove('connected');
+                        statusElement.classList.add('disconnected');
+                    }
+                });
+            }
+        }
+
+        // Actualizar datos cada segundo
+        setInterval(fetchData, 1000);
+        // Verificar estado de conexión cada 5 segundos
+        setInterval(checkConnectionStatus, 5000);
+
+        // Iniciar la primera actualización
+        fetchData();
+    </script>
+</body>
+</html>
