@@ -330,7 +330,7 @@
         let angleHistory = new Array(8).fill(null);
         let pointPositions = new Array(8).fill(null);
         let lastAngle = null;
-        let lastDataObj_0717 = null;
+        let updateCounter_0717 = 0;
 
         // Función para actualizar la línea entre puntos
         function updateLines() {
@@ -366,40 +366,29 @@
                     statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                 }
                 
-                if (code === '0717') {
-                    // 'data' es dataMap[code] en este punto del bucle.
-                    // La condición principal: ¿Ha llegado un nuevo objeto de datos para '0717'?
-                    if (data && data !== lastDataObj_0717) {
-                        lastDataObj_0717 = data; // Guardamos la referencia del nuevo objeto para la próxima comparación.
+                if (code === '0717' && data) {
+                    // Incrementamos el contador cada vez que llega un dato para 0717
+                    updateCounter_0717++;
+                    console.log('Nueva actualización de 0717:', updateCounter_0717);
 
-                        // Extraemos el valor del ángulo. Será 'null' si data.value no es un número válido o no existe.
-                        const newAngle = (data.value !== undefined && !isNaN(Number(data.value))) 
-                                         ? Number(data.value) 
-                                         : null;
-
-                        // Actualizamos el historial de ángulos.
-                        // newAngle (que puede ser un valor numérico o null) se añade al inicio.
+                    // Extraemos el valor del ángulo
+                    const newAngle = !isNaN(Number(data.value)) ? Number(data.value) : null;
+                    if (newAngle !== null) {
+                        // Actualizamos el historial de ángulos
                         angleHistory.unshift(newAngle);
-                        angleHistory = angleHistory.slice(0, 8); // Mantenemos el historial con un máximo de 8 elementos.
+                        angleHistory = angleHistory.slice(0, 8);
 
-                        // Limpiamos las posiciones de los puntos anteriores antes de recalcular.
-                        // Esto es importante si algunos ángulos se vuelven null.
-                        pointPositions.fill(null); 
-
-                        // Actualizamos las posiciones de los puntos basándonos en el angleHistory actualizado.
+                        // Actualizamos las posiciones de los puntos
                         angleHistory.forEach((angle, index) => {
-                            if (angle !== null) { // Solo intentamos calcular y dibujar un punto si el ángulo no es null.
+                            if (angle !== null) {
                                 const pos = updatePoint(index, angle);
                                 pointPositions[index] = pos;
                             }
-                            // Si angle es null, pointPositions[index] permanecerá null, y ese punto no se dibujará.
                         });
 
-                        // Finalmente, actualizamos las líneas que conectan los puntos visibles.
+                        // Actualizamos las líneas
                         updateLines();
                     }
-                    // Si la condición (data && data !== lastDataObj_0717) no se cumple,
-                    // no se hace nada para los puntos de '0717', lo cual es el comportamiento deseado.
                 }
             });
         }
