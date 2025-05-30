@@ -207,52 +207,65 @@
                 <div class="value" id="value-0713">--</div>
                 <div class="status" id="status-0713">Desconectado</div>
             </div>
-        </div>
-        <div class="circles-container">
-            <div class="quadrant-lines">
-                <div class="quadrant-line"></div>
-                <div class="quadrant-line"></div>
-                <div class="quadrant-line"></div>
-                <div class="quadrant-line"></div>
-                <div class="quadrant-line"></div>
-                <div class="quadrant-line"></div>
-                <div class="quadrant-line"></div>
-                <div class="quadrant-line"></div>
-            </div>
-            <div class="degree-labels">
-                <div class="degree-label degree-0">0°</div>
-                <div class="degree-label degree-90">90°</div>
-                <div class="degree-label degree-180">180°</div>
-                <div class="degree-label degree-270">270°</div>
-            </div>
-            <div class="circle circle-outer"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="circle"></div>
-            <div class="point" id="point-0823-0" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <div class="point" id="point-0823-1" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <div class="point" id="point-0823-2" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <div class="point" id="point-0823-3" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <div class="point" id="point-0823-4" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <div class="point" id="point-0823-5" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <div class="point" id="point-0823-6" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <div class="point" id="point-0823-7" style="position: absolute; width: 8px; height: 8px; background-color: #ff9800; border-radius: 50%; transform: translate(-50%, -50%);"></div>
-            <svg width="100%" height="100%" style="position: absolute; top: 0; left: 0; pointer-events: none;">
-                <path id="points-path" stroke="#ff9800" stroke-width="2" fill="none" />
-            </svg>
-        </div>
-        <div class="grid-container">
             <div class="data-container">
                 <h2>AZI</h2>
                 <div class="value" id="value-0715">--</div>
                 <div class="status" id="status-0715">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>MagW</h2>
+                <div class="value" id="value-0732">--</div>
+                <div class="status" id="status-0732">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>GrvW</h2>
+                <div class="value" id="value-0731">--</div>
+                <div class="status" id="status-0731">Desconectado</div>
+            </div>
+        </div>
+
+        <div class="rose-group" style="position: relative; width: 450px; height: 450px; margin: 0 1px; background: none;">
+            <div class="circles-container">
+                <div class="quadrant-lines">
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                    <div class="quadrant-line"></div>
+                </div>
+                <div class="degree-labels">
+                    <div class="degree-label degree-0">0°</div>
+                    <div class="degree-label degree-90">90°</div>
+                    <div class="degree-label degree-180">180°</div>
+                    <div class="degree-label degree-270">270°</div>
+                </div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle"></div>
+                <div class="circle circle-outer" style="width:352px;height:352px;"></div>
+                <!-- SVG para las líneas entre puntos -->
+                <svg id="lines-container" style="position:absolute; width:100%; height:100%; left:0; top:0; z-index:990;">
+                    <path id="points-path" stroke="#0074D9" stroke-width="2" fill="none" opacity="0.5"/>
+                </svg>
+                <!-- Puntos históricos (del más nuevo al más viejo) -->
+                <div id="point-0823-0" class="history-point current" style="position:absolute; width:16px; height:16px; background:#ffffff; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1000;"></div>
+                <div id="point-0823-1" class="history-point" style="position:absolute; width:15px; height:15px; background:#ffffff; opacity:0.85; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:999;"></div>
+                <div id="point-0823-2" class="history-point" style="position:absolute; width:14px; height:14px; background:#ffffff; opacity:0.7; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:998;"></div>
+                <div id="point-0823-3" class="history-point" style="position:absolute; width:13px; height:13px; background:#ffffff; opacity:0.6; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:997;"></div>
+                <div id="point-0823-4" class="history-point" style="position:absolute; width:12px; height:12px; background:#ffffff; opacity:0.5; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:996;"></div>
+                <div id="point-0823-5" class="history-point" style="position:absolute; width:11px; height:11px; background:#ffffff; opacity:0.4; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:995;"></div>
+                <div id="point-0823-6" class="history-point" style="position:absolute; width:10px; height:10px; background:#ffffff; opacity:0.3; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:994;"></div>
+                <div id="point-0823-7" class="history-point" style="position:absolute; width:9px; height:9px; background:#ffffff; opacity:0.2; border-radius:50%; left:50%; top:50%; transform:translate(-50%,-50%); z-index:993;"></div>
             </div>
         </div>
         <div class="grid-container">
@@ -261,6 +274,21 @@
                 <div class="value" id="value-0717">--</div>
                 <div class="status" id="status-0717">Desconectado</div>
             </div>
+            <div class="data-container">
+                <h2>mTFA</h2>
+                <div class="value" id="value-0716">--</div>
+                <div class="status" id="status-0716">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>Shock</h2>
+                <div class="value" id="value-0736">--</div>
+                <div class="status" id="status-0736">Desconectado</div>
+            </div>
+            <div class="data-container">
+                <h2>Vib</h2>
+                <div class="value" id="value-0737">--</div>
+                <div class="status" id="status-0737">Desconectado</div>
+            </div>
         </div>
     </div>
 
@@ -268,7 +296,6 @@
         // La URL base se obtendrá del servidor actual
         const API_URL = window.location.origin + '/api/wits-data';
         let lastUpdateTime = null;
-        let last0717Timestamp = null; // Para detectar nuevas actualizaciones
         
         // Función para calcular el radio para un espacio específico
         function getRadiusForSpace(spaceIndex) {
@@ -302,6 +329,7 @@
         // Array para mantener el historial de ángulos y posiciones
         let angleHistory = new Array(8).fill(null);
         let pointPositions = new Array(8).fill(null);
+        let last0717Timestamp = null; // Para detectar nuevas actualizaciones
 
         // Función para actualizar la línea entre puntos
         function updateLines() {
@@ -319,7 +347,7 @@
             path.setAttribute('d', pathData);
         }
 
-        // Función para actualizar la UI
+        // Código para actualizar la UI
         function updateUI(dataMap) {
             if (!dataMap) return;
             lastUpdateTime = new Date();
@@ -378,8 +406,9 @@
                 }
             });
         }
+            });
+        }
 
-        // Función para verificar el estado de conexión
         function checkConnectionStatus() {
             const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
             codes.forEach(code => {
@@ -391,8 +420,46 @@
                 }
             });
         }
+                    }
+                    if (statusElement) {
+                        statusElement.textContent = data ? 'Conectado' : 'Desconectado';
+                    }
+                    
+                    // Solo procesamos cuando es el dato '0717'
+                    if (code === '0717' && data) {
+                        // Verificamos si es un dato nuevo comprobando el timestamp
+                        const isNewData = data.timestamp && data.timestamp !== last0717Timestamp;
+                        
+                        // Solo actualizamos si es un dato nuevo (con timestamp diferente)
+                        if (isNewData) {
+                            console.log('Nuevo dato 0717 detectado, timestamp:', data.timestamp);
+                            last0717Timestamp = data.timestamp;
+                            
+                            // Extraemos el valor numérico
+                            const newValue = Number(data.value);
+                            
+                            if (!isNaN(newValue)) {
+                                // Desplazamos todos los valores una posición
+                                angleHistory.unshift(newValue);
+                                angleHistory = angleHistory.slice(0, 8);
+                                
+                                // Actualizamos la posición de cada punto
+                                angleHistory.forEach((angle, index) => {
+                                    if (angle !== null) {
+                                        const pos = updatePoint(index, angle);
+                                        pointPositions[index] = pos;
+                                    }
+                                });
+                                
+                                // Actualizamos las líneas entre puntos
+                                updateLines();
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
-        // Función para obtener datos del servidor
         async function fetchData() {
             try {
                 const response = await fetch(API_URL, {
