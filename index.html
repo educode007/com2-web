@@ -327,9 +327,9 @@
         }
 
         // Array para mantener el historial de ángulos y posiciones
-        // Array para mantener el historial de ángulos
         let angleHistory = new Array(8).fill(null);
         let pointPositions = new Array(8).fill(null);
+        let lastAngle = null;
 
         // Función para actualizar la línea entre puntos
         function updateLines() {
@@ -365,27 +365,28 @@
                     statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                 }
                 
-                // Solo procesamos cuando es el dato '0717'
-                if (code === '0717' && data && data.value !== undefined) {
-                    const newValue = Number(data.value);
+                // Si es el código 0171, actualizar los puntos
+                if (code === '0717') {
+                    const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
                     
-                    // Actualizamos siempre que llegue un dato numérico válido
-                    if (!isNaN(newValue)) {
-                        console.log('Nuevo dato 0717:', newValue);
-
-                        // Desplazamos todos los valores una posición
-                        angleHistory.unshift(newValue);
+                    // Solo actualizar si hay un nuevo valor válido y es diferente al último
+                    if (newAngle !== null && newAngle !== lastAngle) {
+                        console.log('Nuevo dato 0:', newAngle, '°');
+                        lastAngle = newAngle;
+                        
+                        // Mover valores antiguos una posición hacia adentro
+                        angleHistory.unshift(newAngle);
                         angleHistory = angleHistory.slice(0, 8);
-
-                        // Actualizamos cada punto con su ángulo correspondiente
+                        
+                        // Actualizar puntos y guardar posiciones
                         angleHistory.forEach((angle, index) => {
                             if (angle !== null) {
                                 const pos = updatePoint(index, angle);
                                 pointPositions[index] = pos;
                             }
                         });
-
-                        // Actualizamos las líneas entre puntos
+                        
+                        // Actualizar las líneas entre puntos
                         updateLines();
                     }
                 }
