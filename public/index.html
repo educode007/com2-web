@@ -355,43 +355,41 @@
             const codes = ['0713', '0715', '0732', '0731','0717', '0716', '0736', '0737'];
             
             codes.forEach(code => {
-                const data = dataMap[code];
+                const data = dataMap.get(code);
                 const valueElement = document.getElementById(`value-${code}`);
                 const statusElement = document.getElementById(`status-${code}`);
-                
+
+                // Actualizar valor
                 if (valueElement) {
                     valueElement.textContent = data ? data.value : '--';
                 }
+
+                // Actualizar estado de conexión
                 if (statusElement) {
-                    statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                     if (data) {
-                        statusElement.classList.add('connected');
+                        statusElement.textContent = 'Conectado';
                         statusElement.classList.remove('disconnected');
+                        statusElement.classList.add('connected');
                     } else {
+                        statusElement.textContent = 'Desconectado';
                         statusElement.classList.remove('connected');
                         statusElement.classList.add('disconnected');
                     }
                 }
-                
-                // Solo procesamos cuando es el dato '0717'
+
+                // Procesar datos especiales para '0717'
                 if (code === '0717' && data) {
-                    // Verificamos si es un dato nuevo comprobando el timestamp
                     const isNewData = data.timestamp && data.timestamp !== last0717Timestamp;
                     
-                    // Solo actualizamos si es un dato nuevo (con timestamp diferente)
                     if (isNewData) {
                         console.log('Nuevo dato 0717 detectado, timestamp:', data.timestamp);
                         last0717Timestamp = data.timestamp;
                         
-                        // Extraemos el valor numérico
                         const newValue = Number(data.value);
-                        
                         if (!isNaN(newValue)) {
-                            // Desplazamos todos los valores una posición
                             angleHistory.unshift(newValue);
                             angleHistory = angleHistory.slice(0, 8);
                             
-                            // Actualizamos la posición de cada punto
                             angleHistory.forEach((angle, index) => {
                                 if (angle !== null) {
                                     const pos = updatePoint(index, angle);
@@ -399,65 +397,28 @@
                                 }
                             });
                             
-                            // Actualizamos las líneas entre puntos
                             updateLines();
                         }
                     }
                 }
             });
         }
-            });
-        }
 
         function checkConnectionStatus() {
-            const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
-            codes.forEach(code => {
-                const statusElement = document.getElementById(`status-${code}`);
-                if (lastUpdateTime && (new Date() - lastUpdateTime) > 5000) {
-                    statusElement.textContent = 'Desconectado';
-                    statusElement.classList.remove('connected');
-                    statusElement.classList.add('disconnected');
-                }
-            });
-        }
-                    }
+            if (!lastUpdateTime) return;
+            
+            const timeSinceLastUpdate = new Date() - lastUpdateTime;
+            if (timeSinceLastUpdate > 5000) {
+                const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
+                codes.forEach(code => {
+                    const statusElement = document.getElementById(`status-${code}`);
                     if (statusElement) {
-                        statusElement.textContent = data ? 'Conectado' : 'Desconectado';
+                        statusElement.textContent = 'Desconectado';
+                        statusElement.classList.remove('connected');
+                        statusElement.classList.add('disconnected');
                     }
-                    
-                    // Solo procesamos cuando es el dato '0717'
-                    if (code === '0717' && data) {
-                        // Verificamos si es un dato nuevo comprobando el timestamp
-                        const isNewData = data.timestamp && data.timestamp !== last0717Timestamp;
-                        
-                        // Solo actualizamos si es un dato nuevo (con timestamp diferente)
-                        if (isNewData) {
-                            console.log('Nuevo dato 0717 detectado, timestamp:', data.timestamp);
-                            last0717Timestamp = data.timestamp;
-                            
-                            // Extraemos el valor numérico
-                            const newValue = Number(data.value);
-                            
-                            if (!isNaN(newValue)) {
-                                // Desplazamos todos los valores una posición
-                                angleHistory.unshift(newValue);
-                                angleHistory = angleHistory.slice(0, 8);
-                                
-                                // Actualizamos la posición de cada punto
-                                angleHistory.forEach((angle, index) => {
-                                    if (angle !== null) {
-                                        const pos = updatePoint(index, angle);
-                                        pointPositions[index] = pos;
-                                    }
-                                });
-                                
-                                // Actualizamos las líneas entre puntos
-                                updateLines();
-                            }
-                        }
-                    }
-                }
-            });
+                });
+            }
         }
 
         async function fetchData() {
