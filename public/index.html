@@ -330,6 +330,7 @@
         let angleHistory = new Array(8).fill(null);
         let pointPositions = new Array(8).fill(null);
         let lastAngle = null;
+        let lastDataObj_0717 = null;
 
         // Función para actualizar la línea entre puntos
         function updateLines() {
@@ -366,26 +367,23 @@
                 }
                 
                 // Actualizar siempre que llegue un valor válido, aunque sea igual al anterior
-if (code === '0717') {
-    const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
-    if (newAngle !== null) {
-        console.log('Nuevo dato 0:', newAngle, '°');
-        lastAngle = newAngle;
+                if (code === '0717') {
+    // Solo actualiza si llega un objeto nuevo (aunque el valor sea igual)
+    if (data && data !== lastDataObj_0717) {
+        lastDataObj_0717 = data; // Guarda la nueva referencia
 
-        // Mover valores antiguos una posición hacia adentro
-        angleHistory.unshift(newAngle);
-        angleHistory = angleHistory.slice(0, 8);
-
-        // Actualizar puntos y guardar posiciones
-        angleHistory.forEach((angle, index) => {
-            if (angle !== null) {
-                const pos = updatePoint(index, angle);
-                pointPositions[index] = pos;
-            }
-        });
-
-        // Actualizar las líneas entre puntos
-        updateLines();
+        const newAngle = !isNaN(Number(data.value)) ? Number(data.value) : null;
+        if (newAngle !== null) {
+            angleHistory.unshift(newAngle);
+            angleHistory = angleHistory.slice(0, 8);
+            angleHistory.forEach((angle, index) => {
+                if (angle !== null) {
+                    const pos = updatePoint(index, angle);
+                    pointPositions[index] = pos;
+                }
+            });
+            updateLines();
+        }
     }
 }
             });
