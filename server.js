@@ -63,13 +63,15 @@ app.post('/api/wits-data', (req, res) => {
 
     // Actualizar el mapa de datos si el código es uno de los que nos interesa
     if (['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'].includes(data.code)) {
-        // Para 0717, siempre actualizamos con un nuevo timestamp
+        // Para 0717, añadimos un timestamp único cuando viene del peripheral server
         if (data.code === '0717') {
+            // Guardamos el dato con un timestamp único cuando viene del peripheral server
             lastDataMap['0717'] = {
                 ...data,
-                timestamp: Date.now() // Añadimos timestamp para tracking
+                timestamp: Date.now(),  // Timestamp único para cada dato del peripheral server
+                fromPeripheral: true    // Marcamos que viene del peripheral server
             };
-            console.log('Dato 0717 recibido:', data.value);
+            console.log('Dato 0717 recibido del peripheral server:', data.value);
         } else {
             // Para otros códigos, actualizamos normalmente
             lastDataMap[data.code] = data;
