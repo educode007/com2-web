@@ -366,26 +366,41 @@
                     statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                 }
                 
-                // Actualizar siempre que llegue un valor válido, aunque sea igual al anterior
                 if (code === '0717') {
-    // Solo actualiza si llega un objeto nuevo (aunque el valor sea igual)
-    if (data && data !== lastDataObj_0717) {
-        lastDataObj_0717 = data; // Guarda la nueva referencia
+                    // 'data' es dataMap[code] en este punto del bucle.
+                    // La condición principal: ¿Ha llegado un nuevo objeto de datos para '0717'?
+                    if (data && data !== lastDataObj_0717) {
+                        lastDataObj_0717 = data; // Guardamos la referencia del nuevo objeto para la próxima comparación.
 
-        const newAngle = !isNaN(Number(data.value)) ? Number(data.value) : null;
-        if (newAngle !== null) {
-            angleHistory.unshift(newAngle);
-            angleHistory = angleHistory.slice(0, 8);
-            angleHistory.forEach((angle, index) => {
-                if (angle !== null) {
-                    const pos = updatePoint(index, angle);
-                    pointPositions[index] = pos;
+                        // Extraemos el valor del ángulo. Será 'null' si data.value no es un número válido o no existe.
+                        const newAngle = (data.value !== undefined && !isNaN(Number(data.value))) 
+                                         ? Number(data.value) 
+                                         : null;
+
+                        // Actualizamos el historial de ángulos.
+                        // newAngle (que puede ser un valor numérico o null) se añade al inicio.
+                        angleHistory.unshift(newAngle);
+                        angleHistory = angleHistory.slice(0, 8); // Mantenemos el historial con un máximo de 8 elementos.
+
+                        // Limpiamos las posiciones de los puntos anteriores antes de recalcular.
+                        // Esto es importante si algunos ángulos se vuelven null.
+                        pointPositions.fill(null); 
+
+                        // Actualizamos las posiciones de los puntos basándonos en el angleHistory actualizado.
+                        angleHistory.forEach((angle, index) => {
+                            if (angle !== null) { // Solo intentamos calcular y dibujar un punto si el ángulo no es null.
+                                const pos = updatePoint(index, angle);
+                                pointPositions[index] = pos;
+                            }
+                            // Si angle es null, pointPositions[index] permanecerá null, y ese punto no se dibujará.
+                        });
+
+                        // Finalmente, actualizamos las líneas que conectan los puntos visibles.
+                        updateLines();
+                    }
+                    // Si la condición (data && data !== lastDataObj_0717) no se cumple,
+                    // no se hace nada para los puntos de '0717', lo cual es el comportamiento deseado.
                 }
-            });
-            updateLines();
-        }
-    }
-}
             });
         }
 
