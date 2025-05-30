@@ -379,11 +379,9 @@
 
                 // Procesar datos especiales para '0717'
                 if (code === '0717' && data) {
-                    console.log('Procesando dato 0717:', data);
                     // Siempre procesamos el dato 0717 cuando lo recibimos
                     const angle = Number(data.value);
                     if (!isNaN(angle)) {
-                        console.log('Actualizando historial con ángulo:', angle);
                         angleHistory.unshift(angle);
                         angleHistory = angleHistory.slice(0, 8);
                         
@@ -395,7 +393,6 @@
                         });
                         
                         updateLines();
-                        console.log('Historial actualizado:', angleHistory);
                     }
                 }
             });
@@ -433,9 +430,9 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const response_data = await response.json();
-                console.log('Datos recibidos:', response_data);
-                updateUI(response_data.data);
+                const dataMap = await response.json();
+                console.log('Datos recibidos:', dataMap);
+                updateUI(dataMap);
             } catch (error) {
                 console.error('Error fetching data:', error);
                 const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
