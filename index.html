@@ -329,7 +329,7 @@
         // Array para mantener el historial de ángulos y posiciones
         let angleHistory = new Array(8).fill(null);
         let pointPositions = new Array(8).fill(null);
-        let lastAngle = null;
+        let last0717Timestamp = null; // Para detectar nuevas actualizaciones
 
         // Función para actualizar la línea entre puntos
         function updateLines() {
@@ -347,9 +347,10 @@
             path.setAttribute('d', pathData);
         }
 
-        // Código existente para actualizar la UI
+        // Código para actualizar la UI
         function updateUI(dataMap) {
             if (!dataMap) return;
+            lastUpdateTime = new Date();
             
             const codes = ['0713', '0715', '0732', '0731','0717', '0716', '0736', '0737'];
             
@@ -357,28 +358,33 @@
                 const data = dataMap[code];
                 const valueElement = document.getElementById(`value-${code}`);
                 const statusElement = document.getElementById(`status-${code}`);
-                
+
+                // Actualizar valor
                 if (valueElement) {
                     valueElement.textContent = data ? data.value : '--';
                 }
+
+                // Actualizar estado de conexión
                 if (statusElement) {
-                    statusElement.textContent = data ? 'Conectado' : 'Desconectado';
+                    if (data) {
+                        statusElement.textContent = 'Conectado';
+                        statusElement.classList.remove('disconnected');
+                        statusElement.classList.add('connected');
+                    } else {
+                        statusElement.textContent = 'Desconectado';
+                        statusElement.classList.remove('connected');
+                        statusElement.classList.add('disconnected');
+                    }
                 }
-                
-                // Si es el código 0171, actualizar los puntos
-                if (code === '0717') {
-                    const newAngle = data && !isNaN(Number(data.value)) ? Number(data.value) : null;
-                    
-                    // Solo actualizar si hay un nuevo valor válido y es diferente al último
-                    if (newAngle !== null && newAngle !== lastAngle) {
-                        console.log('Nuevo dato 0:', newAngle, '°');
-                        lastAngle = newAngle;
-                        
-                        // Mover valores antiguos una posición hacia adentro
-                        angleHistory.unshift(newAngle);
+
+                // Procesar datos especiales para '0717'
+                if (code === '0717' && data) {
+                    // Siempre procesamos el dato 0717 cuando lo recibimos
+                    const angle = Number(data.value);
+                    if (!isNaN(angle)) {
+                        angleHistory.unshift(angle);
                         angleHistory = angleHistory.slice(0, 8);
                         
-                        // Actualizar puntos y guardar posiciones
                         angleHistory.forEach((angle, index) => {
                             if (angle !== null) {
                                 const pos = updatePoint(index, angle);
@@ -386,7 +392,6 @@
                             }
                         });
                         
-                        // Actualizar las líneas entre puntos
                         updateLines();
                     }
                 }
@@ -394,15 +399,20 @@
         }
 
         function checkConnectionStatus() {
-            const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
-            codes.forEach(code => {
-                const statusElement = document.getElementById(`status-${code}`);
-                if (lastUpdateTime && (new Date() - lastUpdateTime) > 5000) {
-                    statusElement.textContent = 'Desconectado';
-                    statusElement.classList.remove('connected');
-                    statusElement.classList.add('disconnected');
-                }
-            });
+            if (!lastUpdateTime) return;
+            
+            const timeSinceLastUpdate = new Date() - lastUpdateTime;
+            if (timeSinceLastUpdate > 5000) {
+                const codes = ['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'];
+                codes.forEach(code => {
+                    const statusElement = document.getElementById(`status-${code}`);
+                    if (statusElement) {
+                        statusElement.textContent = 'Desconectado';
+                        statusElement.classList.remove('connected');
+                        statusElement.classList.add('disconnected');
+                    }
+                });
+            }
         }
 
         async function fetchData() {
