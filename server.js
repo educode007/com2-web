@@ -7,8 +7,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Variables globales para almacenar los datos
+// Variable global para almacenar los últimos datos
 let lastDataMap = {
+
     '0713': null,
     '0715': null,
     '0732': null,
@@ -19,9 +20,6 @@ let lastDataMap = {
     '0737': null
 };
 
-// Variable para controlar cuándo fue la última actualización real de 0717
-let last0717Update = null;
-
 // Middleware para logging
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
@@ -30,15 +28,8 @@ app.use((req, res, next) => {
 
 // Ruta para obtener los últimos datos
 app.get('/api/wits-data', (req, res) => {
-    // Creamos una copia del mapa de datos
-    const responseData = { ...lastDataMap };
-    
-    // Solo incluimos 0717 si ha habido una actualización real
-    if (!last0717Update) {
-        responseData['0717'] = null;
-    }
-    
-    res.json(responseData);
+    console.log('GET /api/wits-data - lastDataMap:', lastDataMap);
+    res.json(lastDataMap);
 });
 
 // Ruta para recibir datos (protegida con API key)
@@ -72,15 +63,20 @@ app.post('/api/wits-data', (req, res) => {
 
     // Actualizar el mapa de datos si el código es uno de los que nos interesa
     if (['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'].includes(data.code)) {
+        // Para 0717, SIEMPRE actualizamos cuando recibimos un POST
+        // ya que esto significa que es un nuevo dato del peripheral sender
+        // aunque el valor sea igual al anterior
         if (data.code === '0717') {
-            // Siempre actualizamos cuando recibimos un nuevo POST de 0717
-            // ya que esto significa que el peripheral sender envió un nuevo dato
-            lastDataMap['0717'] = data;
-            last0717Update = Date.now();
+            // Siempre añadimos un timestamp único para marcar que es un dato nuevo
+            lastDataMap['0717'] = {
+                ...data,
+                timestamp: Date.now() // Añadimos timestamp único para cada actualización
+            };
             console.log('Nuevo dato 0717 recibido del peripheral sender:', data.value);
         } else {
             // Para otros códigos, actualizamos normalmente
             lastDataMap[data.code] = data;
+            console.log('Datos actualizados para código:', data.code);
         }
     }
 
