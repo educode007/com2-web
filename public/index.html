@@ -326,9 +326,7 @@
             return { x: Math.round(x), y: Math.round(y) };
         }
 
-        // Array para mantener el historial de ángulos y posiciones
-        // Array para mantener el historial de ángulos
-        let angleHistory = new Array(8).fill(null);
+        // Array para mantener las posiciones de los puntos
         let pointPositions = new Array(8).fill(null);
 
         // Función para actualizar la línea entre puntos
@@ -365,32 +363,16 @@
                     statusElement.textContent = data ? 'Conectado' : 'Desconectado';
                 }
                 
-                // Solo procesamos cuando es el dato '0717' y viene del peripheral server
-                if (code === '0717' && data && data.value !== undefined && data.fromPeripheral) {
-                    const newValue = Number(data.value);
+                // Procesamos el historial de 0717 si está disponible
+                if (code === '0717' && dataMap.history0717) {
+                    // Actualizamos cada punto con su ángulo correspondiente
+                    dataMap.history0717.forEach((item, index) => {
+                        const pos = updatePoint(index, item.value);
+                        pointPositions[index] = pos;
+                    });
                     
-                    // Actualizamos si es un dato numérico válido
-                    if (!isNaN(newValue)) {
-                        console.log('Nuevo dato 0717 del peripheral server:', newValue);
-
-                        // Desplazamos todos los valores una posición
-                        angleHistory.unshift(newValue);
-                        angleHistory = angleHistory.slice(0, 8);
-
-                        // Actualizamos cada punto con su ángulo correspondiente
-                        angleHistory.forEach((angle, index) => {
-                            if (angle !== null) {
-                                const pos = updatePoint(index, angle);
-                                pointPositions[index] = pos;
-                            }
-                        });
-
-                        // Actualizamos las líneas entre puntos
-                        updateLines();
-                        
-                        // Eliminamos la marca fromPeripheral para que no se procese de nuevo
-                        data.fromPeripheral = false;
-                    }
+                    // Actualizamos las líneas entre puntos
+                    updateLines();
                 }
             });
         }
