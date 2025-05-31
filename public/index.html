@@ -462,10 +462,10 @@
                     if (!isNaN(shkValue)) {
                         const shkBar = document.getElementById('shk-bar');
                         if (shkBar) {
-                            const percentage = Math.min(Math.max(shkValue, 0), 100);
-                            shkBar.style.width = percentage + '%';
+                            // La barra siempre está al 100%
+                            shkBar.style.width = '100%';
                             
-                            // Actualizar color según el valor
+                            // Solo actualizamos el color
                             shkBar.classList.remove('warning', 'danger');
                             if (shkValue <= 20) {
                                 // Verde por defecto (ya definido en CSS)
@@ -483,10 +483,10 @@
                     if (!isNaN(vibValue)) {
                         const vibBar = document.getElementById('vib-bar');
                         if (vibBar) {
-                            const percentage = Math.min(Math.max(vibValue, 0), 100);
-                            vibBar.style.width = percentage + '%';
+                            // La barra siempre está al 100%
+                            vibBar.style.width = '100%';
                             
-                            // Actualizar color según el valor
+                            // Solo actualizamos el color
                             vibBar.classList.remove('warning', 'danger');
                             if (vibValue <= 20) {
                                 // Verde por defecto (ya definido en CSS)
