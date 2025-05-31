@@ -9,7 +9,6 @@ app.use(express.json());
 
 // Variable global para almacenar los últimos datos
 let lastDataMap = {
-
     '0713': null,
     '0715': null,
     '0732': null,
@@ -20,6 +19,9 @@ let lastDataMap = {
     '0737': null
 };
 
+// Array para mantener el historial de datos 0717
+let history0717 = [];
+
 // Middleware para logging
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
@@ -28,8 +30,12 @@ app.use((req, res, next) => {
 
 // Ruta para obtener los últimos datos
 app.get('/api/wits-data', (req, res) => {
-    console.log('GET /api/wits-data - lastDataMap:', lastDataMap);
-    res.json(lastDataMap);
+    const response = {
+        ...lastDataMap,
+        history0717: history0717
+    };
+    console.log('GET /api/wits-data - Enviando datos con historial');
+    res.json(response);
 });
 
 // Ruta para recibir datos (protegida con API key)
@@ -63,15 +69,22 @@ app.post('/api/wits-data', (req, res) => {
 
     // Actualizar el mapa de datos si el código es uno de los que nos interesa
     if (['0713', '0715', '0732', '0731', '0717', '0716', '0736', '0737'].includes(data.code)) {
-        // Para 0717, añadimos un timestamp único cuando viene del peripheral server
+        // Para 0717, mantenemos un historial
         if (data.code === '0717') {
-            // Guardamos el dato con un timestamp único cuando viene del peripheral server
-            lastDataMap['0717'] = {
-                ...data,
-                timestamp: Date.now(),  // Timestamp único para cada dato del peripheral server
-                fromPeripheral: true    // Marcamos que viene del peripheral server
-            };
-            console.log('Dato 0717 recibido del peripheral server:', data.value);
+            const value = Number(data.value);
+            if (!isNaN(value)) {
+                // Añadir al inicio del historial
+                history0717.unshift({
+                    value: value,
+                    timestamp: Date.now()
+                });
+                // Mantener solo los últimos 8 valores
+                history0717 = history0717.slice(0, 8);
+                
+                // Actualizar el último valor en lastDataMap
+                lastDataMap['0717'] = data;
+                console.log('Nuevo dato 0717 agregado al historial:', value);
+            }
         } else {
             // Para otros códigos, actualizamos normalmente
             lastDataMap[data.code] = data;
