@@ -196,6 +196,63 @@
         .degree-90   { right: 25px; top: 50%; transform: translateY(-50%); }
         .degree-180  { bottom: 25px; left: 50%; transform: translateX(-50%); }
         .degree-270  { left: 25px; top: 50%; transform: translateY(-50%); }
+
+        /* Estilos para los indicadores */
+        .indicators-container {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            background: #181a1b;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .indicator-label {
+            color: #ff9800;
+            font-weight: 600;
+            font-size: 14px;
+            min-width: 30px;
+        }
+
+        .indicator-bar-container {
+            width: 70px;
+            height: 20px;
+            background: #23272a;
+            border: 1px solid #ff9800;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .indicator-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .shk-bar {
+            background: #4caf50; /* Verde por defecto */
+        }
+
+        .shk-bar.warning {
+            background: #ffd700; /* Amarillo */
+        }
+
+        .shk-bar.danger {
+            background: #ff4444; /* Rojo */
+        }
+
+        .vib-bar {
+            background: #4caf50;
+        }
     </style>
 </head>
 <body>
@@ -280,14 +337,30 @@
                 <div class="status" id="status-0716">Desconectado</div>
             </div>
             <div class="data-container">
-                <h2>Shock</h2>
+                <h2>DipW</h2>
                 <div class="value" id="value-0736">--</div>
                 <div class="status" id="status-0736">Desconectado</div>
             </div>
             <div class="data-container">
-                <h2>Vib</h2>
+                <h2>Temp</h2>
                 <div class="value" id="value-0737">--</div>
                 <div class="status" id="status-0737">Desconectado</div>
+            </div>
+        </div>
+        
+        <!-- Indicadores Shk y Vib -->
+        <div class="indicators-container">
+            <div class="indicator">
+                <span class="indicator-label">Shk</span>
+                <div class="indicator-bar-container">
+                    <div id="shk-bar" class="indicator-bar shk-bar"></div>
+                </div>
+            </div>
+            <div class="indicator">
+                <span class="indicator-label">Vib</span>
+                <div class="indicator-bar-container">
+                    <div id="vib-bar" class="indicator-bar vib-bar"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -373,6 +446,40 @@
                     
                     // Actualizamos las líneas entre puntos
                     updateLines();
+                }
+
+                // Actualizar indicadores Shk y Vib
+                if (code === '0736' && data) {
+                    const shkValue = Number(data.value);
+                    if (!isNaN(shkValue)) {
+                        const shkBar = document.getElementById('shk-bar');
+                        if (shkBar) {
+                            const percentage = Math.min(Math.max(shkValue, 0), 100);
+                            shkBar.style.width = percentage + '%';
+                            
+                            // Actualizar color según el valor
+                            shkBar.classList.remove('warning', 'danger');
+                            if (shkValue <= 20) {
+                                // Verde por defecto (ya definido en CSS)
+                            } else if (shkValue <= 45) {
+                                shkBar.classList.add('warning');
+                            } else {
+                                shkBar.classList.add('danger');
+                            }
+                        }
+                    }
+                }
+
+                if (code === '0737' && data) {
+                    const vibValue = Number(data.value);
+                    if (!isNaN(vibValue)) {
+                        // Asumimos que el valor está entre 0 y 100
+                        const vibBar = document.getElementById('vib-bar');
+                        if (vibBar) {
+                            const percentage = Math.min(Math.max(vibValue, 0), 100);
+                            vibBar.style.width = percentage + '%';
+                        }
+                    }
                 }
             });
         }
