@@ -251,7 +251,15 @@
         }
 
         .vib-bar {
-            background: #4caf50;
+            background: #4caf50; /* Verde por defecto */
+        }
+
+        .vib-bar.warning {
+            background: #ffd700; /* Amarillo */
+        }
+
+        .vib-bar.danger {
+            background: #ff4444; /* Rojo */
         }
     </style>
 </head>
@@ -473,11 +481,20 @@
                 if (code === '0737' && data) {
                     const vibValue = Number(data.value);
                     if (!isNaN(vibValue)) {
-                        // Asumimos que el valor está entre 0 y 100
                         const vibBar = document.getElementById('vib-bar');
                         if (vibBar) {
                             const percentage = Math.min(Math.max(vibValue, 0), 100);
                             vibBar.style.width = percentage + '%';
+                            
+                            // Actualizar color según el valor
+                            vibBar.classList.remove('warning', 'danger');
+                            if (vibValue <= 20) {
+                                // Verde por defecto (ya definido en CSS)
+                            } else if (vibValue <= 45) {
+                                vibBar.classList.add('warning');
+                            } else {
+                                vibBar.classList.add('danger');
+                            }
                         }
                     }
                 }
